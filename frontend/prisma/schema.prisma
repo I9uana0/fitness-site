@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  FROZEN
+}
+
+enum ClassCategory {
+  GROUP
+  PERSONAL
+  SPA
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  login    String @unique
+  password String
+  email    String @unique
+
+  username   String
+  phone      String?  @unique
+  gender     Gender?
+  datOfBirth DateTime
+  role       UserRole @default(USER)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  payments  Payment[]
+
+  @@map("users")
+}
+
+model Subscription {
+  id         Int                @id @default(autoincrement())
+  type       String
+  visitTotal Int
+  visitsUsed Int                @default(0)
+  startTime  DateTime
+  endTime    DateTime
+  price      Decimal
+  status     SubscriptionStatus @default(ACTIVE)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  payments Payment[]
+  plan     SubscriptionPlan[]
+
+  @@map("subscriptions")
+}
+
+model SubscriptionPlan {
+  id           Int     @id @default(autoincrement())
+  name         String
+  description  String?
+  price        Decimal
+  durationDays Int
+  visitLimit   Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionId Int?
+}
+
+model Class {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  duration    Int
+  difficulty  String?
+  category    ClassCategory
+  isActive    Boolean       @default(true)
+
+  schedules Schedule[]
+
+  @@map("classes")
+}
+
+model Schedule {
+  id        Int      @id @default(autoincrement())
+  classId   Int
+  class     Class    @relation(fields: [classId], references: [id])
+  date      DateTime
+  hall      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("schedules")
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  user           User          @relation(fields: [userId], references: [id])
+  subscriptionId Int?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  ammount        Decimal
+  paymentDate    DateTime      @default(now())
+  paymentMethod  String
+  status         PaymentStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+
+  @@map("payments")
+}
