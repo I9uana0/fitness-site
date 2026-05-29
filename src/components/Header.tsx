@@ -56,8 +56,18 @@ export function Header() {
           </h1>
         </Link>
         <div className="sm:flex gap-8 hidden">
-          <Link href={`/`}>Главная</Link>
-          <Link href={`/schedule`}>Расписание</Link>
+          <Link
+            className="hover:opacity-50"
+            href={`/`}
+          >
+            Главная
+          </Link>
+          <Link
+            className="hover:opacity-50"
+            href={`/schedule`}
+          >
+            Расписание
+          </Link>
         </div>
         {/* // todo добавить атрибуты для доступности */}
         {isPersonalPage ? (
