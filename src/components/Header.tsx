@@ -1,10 +1,12 @@
 "use client";
 
+import { useUserState } from "@/model/useUserState";
 import { Button } from "@heroui/react";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export function Header() {
   const pathname = usePathname();
@@ -25,15 +27,20 @@ export function Header() {
   async function logout() {
     setLoading(true);
     try {
-      await fetch("/api/auth/logout", {
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
-    } catch (error) {
-      console.error("Logout failed");
+      if (response.ok) {
+        useUserState.getState().resetUser();
+        router.replace("/personal");
+      } else {
+        const err = await response.json().catch(() => null);
+        throw new Error(err.error);
+      }
+    } catch (error: any) {
+      toast.error("Logout failed: ", error.message);
       setLoading(false);
-    } finally {
-      router.replace("/personal");
     }
   }
 
@@ -66,7 +73,7 @@ export function Header() {
           <Link
             href={`/personal`}
             onClick={(e) => isPersonalDisabled && e.preventDefault()}
-            className={`bg-[#FFD1DE] px-4 py-2 rounded-full ${!isPersonalDisabled ? "hover:bg-[#e3bac6] active:scale-[0.97]" : "cursor-default opacity-50"}`}
+            className={`bg-[#FFD1DE] text-[#910144] px-4 py-2 rounded-full ${!isPersonalDisabled ? "hover:bg-[#e3bac6] active:scale-[0.97]" : "cursor-default opacity-50"}`}
           >
             Личный кабинет
           </Link>

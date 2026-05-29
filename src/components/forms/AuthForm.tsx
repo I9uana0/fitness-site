@@ -1,8 +1,8 @@
 "use client";
 
+import { builCallbackUrl } from "@/lib/urlUtils";
 import { LoginData } from "@/model/types";
 
-import { useUserState } from "@/model/useUserState";
 import {
   Button,
   FieldError,
@@ -16,9 +16,10 @@ import Link from "next/link";
 interface AuthFormProps {
   onSubmit: ({ email, password }: LoginData) => void;
   loading: boolean;
+  callbackUrl: string;
 }
 
-export function AuthForm({ onSubmit, loading }: AuthFormProps) {
+export function AuthForm({ onSubmit, loading, callbackUrl }: AuthFormProps) {
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -86,7 +87,7 @@ export function AuthForm({ onSubmit, loading }: AuthFormProps) {
           isDisabled={loading}
         >
           Сбросить
-        </Button>{" "}
+        </Button>
         <Button
           className="w-full text-base"
           type="submit"
@@ -98,7 +99,7 @@ export function AuthForm({ onSubmit, loading }: AuthFormProps) {
       <p className="text-center">
         Нет аккаунта?{" "}
         <Link
-          href="/register"
+          href={builCallbackUrl("/register", callbackUrl)}
           className="text-[#f689a9]"
         >
           Зарегистрироваться

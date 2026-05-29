@@ -12,13 +12,19 @@ import {
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import IMask from "imask";
+import { builCallbackUrl } from "@/lib/urlUtils";
 
 interface RegisterFormProps {
-  onSubmit: ({ email, password }: RegisterData) => void;
+  onSubmit: (data: RegisterData) => void;
   loading: boolean;
+  callbackUrl: string;
 }
 
-export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
+export function RegisterForm({
+  onSubmit,
+  loading,
+  callbackUrl,
+}: RegisterFormProps) {
   const phoneRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -38,8 +44,9 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
 
     onSubmit({
       name: String(formData.get("name")).trim(),
+      surname: String(formData.get("surname")).trim(),
       phone: String(formData.get("phone") || "").replace(/\D/g, ""),
-      dateBirth: String(formData.get("dateBirth")),
+      dateOfBirth: String(formData.get("dateOfBirth")),
       email: String(formData.get("email")).trim().toLowerCase(),
       password: String(formData.get("password")),
     });
@@ -82,6 +89,33 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
         </FieldError>
       </TextField>
       <TextField
+        isRequired
+        type="text"
+        name="surname"
+        validate={(value) => {
+          const trimmed = value.trim();
+          if (!trimmed) {
+            return "Введите фамилию";
+          }
+          if (trimmed.length < 2) {
+            return "Фамилия должно содержать минимум 2 символа";
+          }
+          if (trimmed.length > 50) {
+            return "Фамилия слишком длинное. Максимум 50 символов";
+          }
+          if (!/^[a-zA-Zа-яА-ЯёЁ\s-]+$/.test(trimmed)) {
+            return "Фамилия может содержать только буквы";
+          }
+          return null;
+        }}
+      >
+        <Label>Фамилия</Label>
+        <Input placeholder="Введите Фамилию" />
+        <FieldError>
+          {(validation) => validation.validationErrors.join(", ")}
+        </FieldError>
+      </TextField>
+      <TextField
         type="tel"
         name="phone"
         isRequired
@@ -107,7 +141,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
         </FieldError>
       </TextField>
       <TextField
-        name="dateBirth"
+        name="dateOfBirth"
         isRequired
         validate={(value) => {
           if (!value) {
@@ -136,10 +170,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
         }}
       >
         <Label>Дата рождения</Label>
-        <Input
-          type="date"
-          placeholder="8 (123) 456-78-90"
-        />
+        <Input type="date" />
         <FieldError>
           {(validation) => validation.validationErrors.join(", ")}
         </FieldError>
@@ -189,6 +220,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
           className="w-full text-base"
           type="reset"
           variant="tertiary"
+          isDisabled={loading}
         >
           Сбросить
         </Button>
@@ -203,7 +235,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
       <p className="text-center">
         Есть аккаунт?{" "}
         <Link
-          href="/login"
+          href={builCallbackUrl("/login", callbackUrl)}
           className="text-[#f689a9]"
         >
           Войти

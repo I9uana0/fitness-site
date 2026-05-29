@@ -1,3 +1,11 @@
+import { PersonalForm } from "@/components/forms/PersonalForm";
+import { SubscriptionSection } from "@/components/Subscription/SubscriptionSection";
+
 export default function PersonalPage() {
-  return <div>Здесь будет личный кабинет</div>;
+  return (
+    <div className="flex flex-col gap-8 w-200">
+      <PersonalForm />
+      <SubscriptionSection />
+    </div>
+  );
 }

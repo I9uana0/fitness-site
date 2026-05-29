@@ -1,6 +1,8 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -8,126 +10,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  USER
-  ADMIN
+// Модель пользователя
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  phone         String         @unique
+  dateOfBirth   DateTime
+  password      String // Хранится хэшированный пароль
+  name          String         @db.VarChar(255) // Имя пользователя
+  surname       String         @db.VarChar(255) // Фамилия пользователя
+  subscriptions Subscription[] // Связь с абонементами пользователя
+
+  createdAt DateTime @default(now())
 }
 
-enum Gender {
-  MALE
-  FEMALE
+// Модель типа абонемента (Standard, Premium Unlimited)
+model SubscriptionType {
+  id            String         @id @default(uuid())
+  name          String         @unique @db.VarChar(255)
+  priceAmount   Int // Цена в копейках/центах для избежания проблем с плавающей точкой
+  description   String?        @db.Text
+  rate          Rate           @default(STANDARD)
+  subscriptions Subscription[] // Связь с активными абонементами этого типа
 }
 
+// Модель абонемента пользователя
+model Subscription {
+  id                 String             @id @default(uuid())
+  userId             String // ID пользователя, которому принадлежит абонемент
+  user               User               @relation(fields: [userId], references: [id])
+  subscriptionTypeId String // ID типа абонемента
+  subscriptionType   SubscriptionType   @relation(fields: [subscriptionTypeId], references: [id])
+  startDate          DateTime           @default(now())
+  endDate            DateTime
+  pricePaid          Int // Фактическая цена, уплаченная за этот абонемент
+  status             SubscriptionStatus @default(ACTIVE)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+// Расписание занятий
+model ScheduleItem {
+  id              String    @id @default(uuid())
+  name            String    @db.VarChar(255)
+  coach           String    @db.VarChar(255)
+  time            String    @db.VarChar(5) // Например, "08:00"
+  durationMinutes Int
+  type            String    @db.VarChar(50) // Например, "Hard", "Light", "Fun"
+  dayOfWeek       DayOfWeek // День недели для занятия
+}
+
+// Перечисление для статуса абонемента
 enum SubscriptionStatus {
   ACTIVE
-  EXPIRED
   CANCELLED
-  FROZEN
+  EXPIRED
 }
 
-enum ClassCategory {
-  GROUP
-  PERSONAL
-  SPA
-  OTHER
+// Перечисление для дня недели
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
 
-enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-  REFUNDED
-}
-
-model User {
-  id       Int    @id @default(autoincrement())
-  login    String @unique
-  password String
-  email    String @unique
-
-  username   String
-  phone      String?  @unique
-  gender     Gender?
-  datOfBirth DateTime
-  role       UserRole @default(USER)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  payments  Payment[]
-
-  @@map("users")
-}
-
-model Subscription {
-  id         Int                @id @default(autoincrement())
-  type       String
-  visitTotal Int
-  visitsUsed Int                @default(0)
-  startTime  DateTime
-  endTime    DateTime
-  price      Decimal
-  status     SubscriptionStatus @default(ACTIVE)
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
-
-  payments Payment[]
-  plan     SubscriptionPlan[]
-
-  @@map("subscriptions")
-}
-
-model SubscriptionPlan {
-  id           Int     @id @default(autoincrement())
-  name         String
-  description  String?
-  price        Decimal
-  durationDays Int
-  visitLimit   Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
-  subscriptionId Int?
-}
-
-model Class {
-  id          Int           @id @default(autoincrement())
-  name        String
-  description String?
-  duration    Int
-  difficulty  String?
-  category    ClassCategory
-  isActive    Boolean       @default(true)
-
-  schedules Schedule[]
-
-  @@map("classes")
-}
-
-model Schedule {
-  id        Int      @id @default(autoincrement())
-  classId   Int
-  class     Class    @relation(fields: [classId], references: [id])
-  date      DateTime
-  hall      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("schedules")
-}
-
-model Payment {
-  id             Int           @id @default(autoincrement())
-  userId         Int
-  user           User          @relation(fields: [userId], references: [id])
-  subscriptionId Int?
-  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
-  ammount        Decimal
-  paymentDate    DateTime      @default(now())
-  paymentMethod  String
-  status         PaymentStatus @default(PENDING)
-  createdAt      DateTime      @default(now())
-
-  @@map("payments")
+enum Rate {
+  STANDARD
+  PREMIUM
 }
