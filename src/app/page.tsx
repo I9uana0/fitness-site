@@ -72,7 +72,7 @@ export default function Home() {
       <div className="grid md:grid-cols-3 gap-10 mt-20">
         {ServiceInfoCardsMap.map((card) => (
           <ServiceInfoCard
-            key={crypto.randomUUID()}
+            key={card.title}
             title={card.title}
             description={card.description}
             IconColors={card.IconColors}
