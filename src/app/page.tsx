@@ -35,27 +35,27 @@ export default function Home() {
       id="home"
       className="page-section active"
     >
-      <div className="flex flex-col md:flex-row items-center justify-between py-16 gap-12">
+      <div className="flex flex-col md:flex-row items-center justify-between  gap-12">
         <div className="md:w-1/2 space-y-7">
-          <h1 className="text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            Твой прогресс — наша <span className="logo-text">цель.</span>
+          <h1 className="sm:text-6xl text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+            Твой прогресс — наша цель.
           </h1>
-          <p className="text-xl text-gray-700 leading-relaxed">
+          <p className="sm:text-xl text-lg text-gray-700 leading-relaxed">
             Современное оборудование, лучшие тренеры города и уютная атмосфера.
             Начни свою трансформацию сегодня!
           </p>
           <div className="flex flex-col sm:flex-row gap-6">
             <Link
               href={`/personal`}
-              className={`flex items-center justify-center bg-[#FFD1DE] text-[#910144] px-9 py-4.5 rounded-xl font-bold text-lg hover:bg-[#e3bac6] shadow-xl transition transform hover:-translate-y-1.5 active:scale-[0.97]`}
+              className={`flex items-center justify-center bg-[#FFD1DE] px-9 py-4.5 rounded-xl font-bold text-lg hover:bg-[#e3bac6] shadow-xl transition transform hover:-translate-y-1.5 active:scale-[0.97]`}
             >
               Абонементы
             </Link>
             <Link
               href={"/schedule"}
-              className="border-2 border-gray-300 text-gray-800 px-9 py-4.5 rounded-xl font-bold text-lg hover:bg-gray-100 transition transform hover:-translate-y-0.5"
+              className="text-center border-2 border-gray-300 text-gray-800 px-9 py-4.5 rounded-xl font-bold text-lg hover:bg-gray-100 transition transform hover:-translate-y-0.5"
             >
-              Смотреть занятия
+              Смотреть расписание
             </Link>
           </div>
         </div>

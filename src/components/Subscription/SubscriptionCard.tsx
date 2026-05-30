@@ -36,14 +36,14 @@ export function SubscriptionCard({
             {formatPrice(priceAmount)}
           </div>
         ) : (
-          <span
+          <div
             className={`flex items-center gap-2 px-3 py-1 ${STATUS_COLORS[status].bg} ${STATUS_COLORS[status].text} rounded-full text-xs font-medium`}
           >
             <span
               className={`w-2 h-2 ${STATUS_COLORS[status].dot} rounded-full`}
             />
             {STATUS_MAP[status]}
-          </span>
+          </div>
         )}
       </div>
 

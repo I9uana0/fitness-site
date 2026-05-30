@@ -2,6 +2,7 @@
 
 import { useUserState } from "@/model/useUserState";
 import { Button } from "@heroui/react";
+import { Dumbbell } from "lucide-react";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -47,13 +48,23 @@ export function Header() {
   return (
     <header className="bg-white">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
-        <Link href={`/`}>
-          <h1
-            className="font-bold"
-            aria-label="logo"
-          >
-            Технологический
-          </h1>
+        <Link
+          href={`/`}
+          className="flex gap-5 max-sm:gap-2.5 items-center"
+        >
+          <Dumbbell
+            width={28}
+            height={28}
+          />
+          <div>
+            <h1
+              className="font-bold"
+              aria-label="logo"
+            >
+              Технологический
+            </h1>
+            <span className="text-sm">Фитнес-клуб</span>
+          </div>
         </Link>
         <div className="sm:flex gap-8 hidden">
           <Link
@@ -83,7 +94,7 @@ export function Header() {
           <Link
             href={`/personal`}
             onClick={(e) => isPersonalDisabled && e.preventDefault()}
-            className={`bg-[#FFD1DE] text-[#910144] px-4 py-2 rounded-full ${!isPersonalDisabled ? "hover:bg-[#e3bac6] active:scale-[0.97]" : "cursor-default opacity-50"}`}
+            className={`bg-[#FFD1DE] font-medium max-sm:text-sm px-4 py-2 rounded-full ${!isPersonalDisabled ? "hover:bg-[#e3bac6] active:scale-[0.97]" : "cursor-default opacity-50"}`}
           >
             Личный кабинет
           </Link>

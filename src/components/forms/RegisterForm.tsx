@@ -55,7 +55,7 @@ export function RegisterForm({
   return (
     <Form
       onSubmit={handleSubmit}
-      className="flex w-96 flex-col gap-4 bg-white p-8 rounded-3xl shadow-sm"
+      className="flex sm:w-96 flex-col gap-4 bg-white p-8 rounded-3xl shadow-sm"
     >
       <div className="">
         <h1 className="text-center font-bold text-2xl">Регистрация</h1>

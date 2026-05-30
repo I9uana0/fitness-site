@@ -10,7 +10,7 @@ export async function register(data: RegisterData) {
     body: JSON.stringify(data),
   });
 
-  const result = await res.json().catch(() => null);
+  const result = await res.json().catch(console.error);
 
   if (!res.ok) {
     throw new Error(result?.error || result?.message || "Register failed");

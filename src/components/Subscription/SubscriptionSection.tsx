@@ -27,19 +27,19 @@ export async function SubscriptionSection() {
 
   return (
     <>
-      <div className=" bg-white p-8 rounded-3xl shadow-sm">
+      <div className="bg-white p-8 rounded-3xl shadow-sm">
         {active ? (
           <>
             <div className="flex justify-between mb-5">
-              <h2 className="font-bold text-2xl">Мой Абонемент</h2>
-              <span
+              <h2 className="font-bold sm:text-2xl text-xl">Мой Абонемент</h2>
+              <div
                 className={`flex items-center gap-2 px-3 py-1 bg-green-50 ${STATUS_COLORS[active.status].text} rounded-full text-xs font-medium`}
               >
-                <span
+                <div
                   className={`w-2 h-2 ${STATUS_COLORS[active.status].bg} rounded-full animate-pulse`}
                 />
-                Активен
-              </span>
+                <p>Активен</p>
+              </div>
             </div>
             <SubscriptionCard subscription={active} />
             <CancelSubscriptionButton subscriptionId={active.id} />
