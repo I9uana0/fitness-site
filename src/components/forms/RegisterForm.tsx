@@ -9,22 +9,38 @@ import {
   Label,
   TextField,
 } from "@heroui/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import IMask from "imask";
 import { builCallbackUrl } from "@/lib/urlUtils";
+import { useRouter } from "next/navigation";
+import { getMe, login, register } from "@/lib/auth/auth";
+import { useUserState } from "@/model/useUserState";
+import toast from "react-hot-toast";
 
 interface RegisterFormProps {
-  onSubmit: (data: RegisterData) => void;
-  loading: boolean;
   callbackUrl: string;
 }
 
-export function RegisterForm({
-  onSubmit,
-  loading,
-  callbackUrl,
-}: RegisterFormProps) {
+export function RegisterForm({ callbackUrl }: RegisterFormProps) {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
+  async function handleRegister(data: RegisterData) {
+    setLoading(true);
+    try {
+      await register(data);
+      await login(data);
+      await getMe()
+        .then(useUserState.getState().setUser)
+        .catch(useUserState.getState().resetUser);
+      router.push(callbackUrl);
+    } catch (error: any) {
+      toast.error("Ошибка регистрации: " + error.message);
+      setLoading(false);
+    }
+  }
   const phoneRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -42,7 +58,7 @@ export function RegisterForm({
 
     const formData = new FormData(e.currentTarget);
 
-    onSubmit({
+    handleRegister({
       name: String(formData.get("name")).trim(),
       surname: String(formData.get("surname")).trim(),
       phone: String(formData.get("phone") || "").replace(/\D/g, ""),

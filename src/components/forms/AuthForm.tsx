@@ -1,7 +1,9 @@
 "use client";
 
+import { getMe, login } from "@/lib/auth/auth";
 import { builCallbackUrl } from "@/lib/urlUtils";
 import { LoginData } from "@/model/types";
+import { useUserState } from "@/model/useUserState";
 
 import {
   Button,
@@ -12,20 +14,42 @@ import {
   TextField,
 } from "@heroui/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface AuthFormProps {
-  onSubmit: ({ email, password }: LoginData) => void;
-  loading: boolean;
   callbackUrl: string;
 }
 
-export function AuthForm({ onSubmit, loading, callbackUrl }: AuthFormProps) {
+export function AuthForm({ callbackUrl }: AuthFormProps) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    useUserState.getState().resetUser();
+  }, []);
+
+  async function handleLogin(data: LoginData) {
+    setLoading(true);
+    try {
+      await login(data);
+      await getMe()
+        .then(useUserState.getState().setUser)
+        .catch(useUserState.getState().resetUser);
+      router.push(callbackUrl);
+    } catch (error: any) {
+      toast.error("Ошибка авторизации: " + error.message);
+      setLoading(false);
+    }
+  }
+
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
 
-    onSubmit({
+    handleLogin({
       email: String(formData.get("email")),
       password: String(formData.get("password")),
     });
