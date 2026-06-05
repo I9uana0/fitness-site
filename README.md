@@ -1,36 +1,314 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fitness Site
 
-## Getting Started
+Веб-приложение фитнес-клуба, разработанное на базе Next.js, Prisma и PostgreSQL.
 
-First, run the development server:
+Проект предоставляет функционал для:
+
+- регистрации и авторизации пользователей;
+- управления пользователями;
+- просмотра расписания тренировок;
+- работы с абонементами;
+- хранения данных в PostgreSQL через Prisma ORM;
+- деплоя на Vercel.
+
+## Технологический стек
+
+### Frontend
+
+- Next.js 16
+- React 19
+- TypeScript
+- HeroUI
+- Tailwind CSS 4
+- Zustand
+- Lucide React
+
+### Backend
+
+- Next.js Route Handlers
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- bcryptjs
+
+### Инструменты разработки
+
+- TypeScript
+- Prisma CLI
+- ts-node
+
+---
+
+## Возможности
+
+### Пользователи
+
+- Регистрация
+- Авторизация
+- Хранение хэшированных паролей
+- JWT-аутентификация
+
+### Абонементы
+
+- Несколько типов абонементов
+- Отслеживание статуса абонемента
+- История покупок пользователя
+
+### Расписание
+
+- Расписание по дням недели
+- Информация о тренере
+- Время проведения занятия
+- Длительность тренировки
+
+---
+
+## Структура базы данных
+
+### User
+
+Пользователь системы.
+
+| Поле        | Тип      |
+| ----------- | -------- |
+| id          | UUID     |
+| email       | String   |
+| phone       | String   |
+| name        | String   |
+| surname     | String   |
+| dateOfBirth | DateTime |
+| password    | String   |
+
+---
+
+### SubscriptionType
+
+Тип абонемента.
+
+| Поле        | Тип                |
+| ----------- | ------------------ |
+| id          | UUID               |
+| name        | String             |
+| priceAmount | Int                |
+| description | String             |
+| rate        | STANDARD / PREMIUM |
+
+---
+
+### Subscription
+
+Активный или завершённый абонемент пользователя.
+
+| Поле               | Тип                          |
+| ------------------ | ---------------------------- |
+| id                 | UUID                         |
+| userId             | UUID                         |
+| subscriptionTypeId | UUID                         |
+| startDate          | DateTime                     |
+| endDate            | DateTime                     |
+| pricePaid          | Int                          |
+| status             | ACTIVE / CANCELLED / EXPIRED |
+
+---
+
+### ScheduleItem
+
+Элемент расписания тренировок.
+
+| Поле            | Тип    |
+| --------------- | ------ |
+| id              | UUID   |
+| name            | String |
+| coach           | String |
+| time            | String |
+| durationMinutes | Int    |
+| type            | String |
+| dayOfWeek       | Enum   |
+
+---
+
+## Установка
+
+### 1. Клонирование репозитория
+
+```bash
+git clone https://github.com/I9uana0/fitness-site.git
+cd fitness-site
+```
+
+### 2. Установка зависимостей
+
+```bash
+npm install
+```
+
+---
+
+## Настройка окружения
+
+Создайте файл:
+
+```bash
+.env
+```
+
+на основе:
+
+```bash
+.env.example
+```
+
+Пример:
+
+```env
+DATABASE_URL="postgresql://username:password@host:5432/database"
+
+JWT_SECRET=super-secret-key
+
+ALLOWED_DEV_ORIGINS=http://localhost:3000
+```
+
+---
+
+## Запуск PostgreSQL через Docker
+
+Проект поддерживает локальную работу через Docker Compose.
+
+Запуск:
+
+```bash
+docker compose up -d
+```
+
+Проверка контейнеров:
+
+```bash
+docker ps
+```
+
+Остановка:
+
+```bash
+docker compose down
+```
+
+---
+
+## Prisma
+
+### Генерация Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### Создание миграции
+
+```bash
+npx prisma migrate dev --name init
+```
+
+### Применение миграций в production
+
+```bash
+npx prisma migrate deploy
+```
+
+### Просмотр данных
+
+```bash
+npx prisma studio
+```
+
+---
+
+## Заполнение базы тестовыми данными
+
+В проекте используется seed-скрипт:
+
+```bash
+npx prisma db seed
+```
+
+Конфигурация находится в:
+
+```json
+{
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
+}
+```
+
+---
+
+## Запуск проекта
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение будет доступно по адресу:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Production build
 
-## Learn More
+Сборка:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Запуск:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm start
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Переменные окружения
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Переменная          | Описание                             |
+| ------------------- | ------------------------------------ |
+| DATABASE_URL        | URL подключения к PostgreSQL         |
+| JWT_SECRET          | Секретный ключ JWT                   |
+| ALLOWED_DEV_ORIGINS | Разрешённые источники для разработки |
+| POSTGRES_USER       | Пользователь PostgreSQL              |
+| POSTGRES_PASSWORD   | Пароль PostgreSQL                    |
+| POSTGRES_DB         | Имя базы данных                      |
+| POSTGRES_PORT       | Порт PostgreSQL                      |
+| POSTGRES_HOST       | Хост PostgreSQL                      |
+
+---
+
+## Деплой
+
+Проект может быть развёрнут на:
+
+- Vercel
+- Railway
+- Render
+- VPS с Docker
+
+Для деплоя необходимо:
+
+1. Создать PostgreSQL базу данных.
+2. Указать `DATABASE_URL`.
+3. Указать `JWT_SECRET`.
+4. Выполнить миграции:
+
+```bash
+npx prisma migrate deploy
+```
+
+---
+
+## Лицензия
+
+Проект создан в образовательных целях.
